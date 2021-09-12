@@ -1,18 +1,62 @@
 # CarND-Path-Planning-Project
 Self-Driving Car Engineer Nanodegree Program
    
-### Simulator.
-You can download the Term3 Simulator which contains the Path Planning Project from the [releases tab (https://github.com/udacity/self-driving-car-sim/releases/tag/T3_v1.2).  
+## Simulator.
+You can download the Term3 Simulator which contains the Path Planning Project from the [releases tab](https://github.com/udacity/self-driving-car-sim/releases/tag/T3_v1.2).  
 
 To run the simulator on Mac/Linux, first make the binary file executable with the following command:
 ```shell
 sudo chmod u+x {simulator_file_name}
 ```
 
-### Goals
-In this project your goal is to safely navigate around a virtual highway with other traffic that is driving +-10 MPH of the 50 MPH speed limit. You will be provided the car's localization and sensor fusion data, there is also a sparse map list of waypoints around the highway. The car should try to go as close as possible to the 50 MPH speed limit, which means passing slower traffic when possible, note that other cars will try to change lanes too. The car should avoid hitting other cars at all cost as well as driving inside of the marked road lanes at all times, unless going from one lane to another. The car should be able to make one complete loop around the 6946m highway. Since the car is trying to go 50 MPH, it should take a little over 5 minutes to complete 1 loop. Also the car should not experience total acceleration over 10 m/s^2 and jerk that is greater than 10 m/s^3.
+## Goals
+In this project my goal is to safely navigate around a virtual highway with other traffic that is driving +-10 MPH of the 50 MPH speed limit. I’m provided the car's localization and sensor fusion data, there is also a sparse map list of waypoints around the highway. The car should try to go as close as possible to the 50 MPH speed limit, which means passing slower traffic when possible, note that other cars will try to change lanes too. The car should avoid hitting other cars at all cost as well as driving inside of the marked road lanes at all times, unless going from one lane to another. The car should be able to make one complete loop around the 6946m highway. Since the car is trying to go 50 MPH, it should take a little over 5 minutes to complete 1 loop. Also the car should not experience total acceleration over 10 m/s^2 and jerk that is greater than 10 m/s^3.  
 
-#### The map of the highway is in data/highway_map.txt
+## Steps  
+The steps of this project are the following:  
+(1)	Drive the course with Lane Keep mode. (main.cpp)  
+I added some features as below:
+-	Change the ego vehicle speed gradually to avoid overshoot of acceleration / jerk limitations.
+-	If the preceding vehicle’s position is close to the ego vehicle, speed down to avoid collision.
+-	If the vehicle on the next lane tries to Lane Change to current lane, speed down to avoid collision.
+-	If the behind vehicle is too close to the ego vehicle, speed up to avoid collision.
+
+(2)	Calculate the cost functions on each lane and find the optimal one that has the lowest cost. (lanechange.cpp)    
+I set the following cost functions:  
+-	Static cost on each lane. Left lane has a smaller cost because basically other vehicles tend to drive faster in the left lane.
+-	Traffic density cost on each lane. The less other vehicles in front of the ego vehicle, the less the cost becomes.
+-	Average speed cost on each lane. The higher other vehicles run in front of the ego vehicle, the less the cost becomes.
+-	Distance cost between the preceding vehicle. If it’s too close to the ego vehicle, the cost becomes high to encourage Lane Change to other lanes.
+
+(3)	Execute Lane Change if the current lane isn’t the optimal one. (main.cpp)  
+I added some features as below:  
+-	Set 1 second counter to change the lane to avoid hunting.
+-	Execute Lane Change only when it’s considered safe.
+
+## Result
+I ran the Simulator a couple of times, and I achieved the Project Rubric as below:
+-	The car is able to drive at least 4.32 miles without incident.
+-	The car drives according to the speed limit.
+-	Max Acceleration and Jerk are not Exceeded.
+-	Car does not have collisions.
+-	The car stays in its lane, except for the time between changing lanes.
+-	The car is able to change lanes
+
+If the left lane is not dense, the ego vehicle executes Lane Change to left.  
+<img src="result/fig1.png" width="240" alt="Combined Image" />
+<img src="result/fig2.png" width="240" alt="Combined Image" />  
+
+If there’s a car in the left lane and no car in the center lane, the ego vehicle executes Lane Change to center.  
+<img src="result/fig3.png" width="240" alt="Combined Image" />
+<img src="result/fig4.png" width="240" alt="Combined Image" />  
+
+If there’re cars in the left and center lanes and there’s no car in the right lane, the ego vehicle executes Lane Change to right.  
+<img src="result/fig5.png" width="240" alt="Combined Image" />
+<img src="result/fig6.png" width="240" alt="Combined Image" />  
+
+### Please refer the writeup material for details. [Writeup_of_Lesson11.pdf](https://github.com/kkumazaki/Self-Drivig-Car_Project7_Path-Planning/blob/master/Writeup_of_Lesson11.pdf)
+
+## The map of the highway is in data/highway_map.txt
 Each waypoint in the list contains  [x,y,s,dx,dy] values. x and y are the waypoint's map coordinate position, the s value is the distance along the road to get to that waypoint in meters, the dx and dy values define the unit normal vector pointing outward of the highway loop.
 
 The highway's waypoints loop around so the frenet s value, distance along the road, goes from 0 to 6945.554.
